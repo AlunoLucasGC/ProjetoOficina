@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto final — UC12 · UC13</title>
+<style>
+  :root{
+    --ink:#10201f; --ink-2:#3b4e4c; --ink-3:#687b79; --line:#dde7e5;
+    --bg:#f4f8f7; --card:#ffffff;
+    --green:#0a7c74; --green-soft:#e2f2f0;
+    --blue:#01417e; --blue-soft:#e5edf7;
+    --purple:#6b3fa0; --purple-soft:#f0eaf8;
+    --amber:#9a6100; --amber-soft:#fdf1de;
+    --red:#b3261e; --red-soft:#fdeceb;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(16,32,31,.06), 0 6px 18px rgba(16,32,31,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:76px}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1020px; margin:0 auto; padding:0 24px}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.93); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex; align-items:center; gap:6px; height:56px; overflow-x:auto}
+  nav .brand{font-weight:700; font-size:14px; white-space:nowrap; margin-right:8px; color:var(--green)}
+  nav a{
+    color:var(--ink-2); text-decoration:none; font-size:13px; font-weight:500;
+    padding:6px 9px; border-radius:8px; white-space:nowrap;
+  }
+  nav a:hover{background:var(--green-soft); color:var(--green)}
+  nav a.err{color:var(--red)}
+  nav a.err:hover{background:var(--red-soft)}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    background:linear-gradient(160deg,#0a7c74 0%,#076765 55%,#05504f 100%);
+    color:#fff; padding:60px 0 52px;
+  }
+  header.hero .eyebrow{
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    opacity:.85; font-weight:600; margin:0 0 14px;
+  }
+  header.hero h1{font-size:clamp(28px,5vw,44px); line-height:1.15; margin:0 0 16px; letter-spacing:-.02em}
+  header.hero p.sub{font-size:17.5px; max-width:700px; opacity:.92; margin:0 0 26px}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+    padding:6px 13px; border-radius:999px; font-size:13.5px; font-weight:500;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:52px 0; border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:28px; height:28px; padding:0 7px; border-radius:8px;
+    background:var(--green); color:#fff; font-size:13px; font-weight:700; margin-right:11px;
+  }
+  .num.red{background:var(--red)}
+  h2{font-size:25px; margin:0 0 10px; letter-spacing:-.015em; display:flex; align-items:center}
+  .lead{color:var(--ink-2); max-width:740px; margin:0 0 26px; font-size:16.5px}
+  h3{font-size:17.5px; margin:30px 0 12px}
+  p{margin:0 0 14px}
+
+  /* ---------- GRID + CARDS ---------- */
+  .grid{display:grid; gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:20px; box-shadow:var(--shadow);
+  }
+  .card h4{margin:0 0 8px; font-size:16.5px}
+  .card p{margin:0 0 10px; color:var(--ink-2); font-size:15px}
+  .card p:last-child{margin-bottom:0}
+  .card ul{margin:10px 0 0; padding-left:18px; color:var(--ink-2); font-size:14.5px}
+  .card li{margin-bottom:5px}
+  .card li::marker{color:var(--green)}
+  .card .tagline{font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; color:var(--green)}
+
+  /* ---------- TABLE ---------- */
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow); margin:18px 0}
+  table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:560px}
+  th,td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  thead th{background:#edf4f3; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2)}
+  tbody tr:last-child td{border-bottom:0}
+  td.c,th.c{text-align:center}
+  .yes{color:var(--green); font-weight:700}
+  .no{color:#c3ccc8}
+
+  /* ---------- CODE ---------- */
+  pre{
+    background:#10201f; color:#d7e3de; border-radius:11px; padding:16px 18px;
+    overflow-x:auto; font-size:13.5px; line-height:1.65; margin:14px 0;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  pre .c{color:#7fa39d; font-style:italic}
+  pre .k{color:#8ed0c6}
+  pre .s{color:#e3c78a}
+  code{
+    background:#eef3f1; padding:1.5px 6px; border-radius:5px; font-size:.9em;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#0a5f59;
+  }
+  pre code{background:none; padding:0; color:inherit}
+
+  /* ---------- CALLOUTS ---------- */
+  .aula{
+    background:var(--green-soft); border-left:4px solid var(--green);
+    padding:15px 19px; border-radius:0 10px 10px 0; margin:20px 0; font-size:15px; color:#0a4a45;
+  }
+  .aula .lb{
+    display:block; font-size:11.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--green); margin-bottom:5px;
+  }
+  .callout{
+    background:var(--amber-soft); border-left:4px solid var(--amber);
+    padding:15px 19px; border-radius:0 10px 10px 0; margin:20px 0; font-size:15px; color:#5c3d00;
+  }
+  .callout strong{color:#3d2900}
+  .erro{
+    background:var(--red-soft); border:1px solid #f3c9c6; border-left:4px solid var(--red);
+    padding:18px 20px; border-radius:0 10px 10px 0; margin:22px 0; color:#7a1a14; font-size:15px;
+  }
+  .erro .lb{
+    display:block; font-size:11.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--red); margin-bottom:6px;
+  }
+  .erro h4{margin:0 0 10px; font-size:17px; color:#5c110d}
+  .erro pre{background:#4a120e; color:#f0d5d2}
+  .erro pre .c{color:#c99a95}
+
+  /* ---------- STEP HEADER ---------- */
+  .passo{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px}
+  .passo .quando{font-size:12.5px; color:var(--ink-3); font-weight:600; text-transform:uppercase; letter-spacing:.05em}
+
+  /* ---------- TREE ---------- */
+  .tree{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 22px; box-shadow:var(--shadow); font-size:13.5px; line-height:1.9;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-x:auto;
+  }
+  .tree .an{color:var(--ink-3); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:13px}
+  .tree .php{color:var(--blue); font-weight:600}
+  .tree .html{color:var(--amber); font-weight:600}
+  .tree .fix{color:var(--green); font-weight:600}
+
+  /* ---------- CHECKLIST ---------- */
+  .chk{display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--line)}
+  .chk:last-child{border-bottom:0}
+  .chk .mk{flex:0 0 22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; margin-top:2px}
+  .chk .mk.ok{background:var(--green)}
+  .chk .mk.no{background:#c3ccc8}
+  .chk .t{font-weight:600; font-size:15px}
+  .chk .d{font-size:14px; color:var(--ink-2)}
+
+  /* ---------- ENTREGA ---------- */
+  .faixa{border-radius:var(--radius); padding:20px 22px; margin-bottom:14px; border:1px solid var(--line); background:var(--card); box-shadow:var(--shadow)}
+  .faixa.pronto{border-left:5px solid var(--green)}
+  .faixa.html{border-left:5px solid var(--amber)}
+  .faixa.junto{border-left:5px solid var(--blue)}
+  .faixa h4{margin:0 0 4px; font-size:17px}
+  .faixa .sub{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px}
+  .faixa.pronto .sub{color:var(--green)}
+  .faixa.html .sub{color:var(--amber)}
+  .faixa.junto .sub{color:var(--blue)}
+
+  footer{background:#10201f; color:#c5d2cb; padding:34px 0; font-size:14px}
+  footer strong{color:#fff}
+  footer a{color:#8ed0c6}
+
+  @media (max-width:640px){
+    section{padding:38px 0}
+    .wrap{padding:0 18px}
+  }
+  @media print{
+    nav{display:none}
+    body{background:#fff}
+    section{page-break-inside:avoid; border-bottom:1px solid #ddd}
+    .card,.tablewrap,.tree{box-shadow:none}
+    pre{background:#f4f6f5; color:#10201f; border:1px solid #ddd}
+    pre .c{color:#5a7a74}
+    header.hero{background:#0a7c74 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  }
+
+  /* divisores de parte */
+  .divisor{background:var(--ink); color:#e8f2f0; padding:34px 0 30px}
+  .divisor h2{color:#fff}
+  .divisor .lead{color:#a9c4c0; margin:0; max-width:740px}
+  .parte-num{font-size:12px; text-transform:uppercase; letter-spacing:.1em;
+             font-weight:700; color:#6fada6}
+
+  /* ---------- acrescentado para o enunciado ---------- */
+  .preencher {
+    display:inline-block; min-width:120px; padding:1px 10px;
+    border:1px dashed var(--amber); border-radius:5px;
+    background:var(--amber-soft); color:var(--amber);
+    font-size:13px; font-weight:600;
+  }
+  .arqs { display:grid; gap:7px; margin:14px 0; }
+  .arq {
+    display:flex; gap:12px; align-items:baseline; flex-wrap:wrap;
+    padding:8px 12px; background:var(--card);
+    border:1px solid var(--line); border-left:3px solid var(--green);
+    border-radius:0 8px 8px 0;
+  }
+  .arq code { background:none; padding:0; color:var(--green); font-weight:600; }
+  .arq span { color:var(--ink-3); font-size:13.5px; }
+  .temas { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:8px; margin:14px 0; }
+  .tema { padding:9px 12px; background:var(--card); border:1px solid var(--line);
+          border-radius:9px; font-size:13.5px; }
+  .tema b { display:block; color:var(--ink); margin-bottom:2px; }
+  .tema span { color:var(--ink-3); font-size:12.5px; }
+  .naotem { color:var(--ink-3); }
+  .naotem li { margin-bottom:5px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">Projeto final</span>
+    <a href="#oque">O que é</a>
+    <a href="#tema">Escolha o tema</a>
+    <a href="#arquivos">Os arquivos</a>
+    <a href="#banco">O banco</a>
+    <a href="#requisitos">Requisitos</a>
+    <a href="#login">O login e a tranca</a>
+    <a href="#sintaxe">A troca de sintaxe</a>
+    <a href="#naoprecisa">O que não precisa</a>
+    <a href="#diferenciais">Diferenciais</a>
+    <a href="#avaliacao">Avaliação</a>
+    <a href="#armadilhas">Armadilhas</a>
+    <a href="#entrega">Entrega</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">UC12 · UC13 · Técnico em Desenvolvimento de Sistemas · Senac</p>
+    <h1>Projeto final — seu sistema, do zero</h1>
+    <p class="sub">Um sistema web com cadastro, login e área protegida. <strong>Individual</strong>,
+      com tema de sua escolha, usando HTML, CSS, PHP e MySQL — exatamente o que estudamos
+      nas aulas 1 a 7.</p>
+    <div class="chips">
+      <span class="chip">Individual</span>
+      <span class="chip">Tema livre</span>
+      <span class="chip">11 arquivos</span>
+      <span class="chip">1 tabela (2 como diferencial)</span>
+      <span class="chip">Entrega: <span class="preencher">data</span></span>
+    </div>
+  </div>
+</header>
+
+
+<section id="oque">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">1</span>O que é este projeto</h2>
+    </div>
+    <p class="lead">Você vai construir, <strong>do zero</strong>, um sistema pequeno e completo:
+      uma tela de login, uma área que só abre para quem entrou, e um cadastro com as quatro
+      operações — listar, cadastrar, editar e inativar.</p>
+
+    <p>É o mesmo desenho da <strong>aula 7</strong>, com uma diferença que é o ponto da
+    atividade: lá o tema era produtos e o código estava pronto na tela. Aqui o tema é seu, e
+    o código sai da sua cabeça.</p>
+
+    <div class="callout">
+      <strong>Pode consultar a aula 7? Pode.</strong> Pode copiar e colar? <strong>Não.</strong>
+      Abra os arquivos antigos quantas vezes precisar para lembrar como era — e depois escreva
+      os seus, do começo, com os seus nomes de tabela e de campo. Projeto que é a aula 7 com as
+      palavras trocadas é fácil de reconhecer, e não mostra o que você aprendeu.
+    </div>
+
+    <div class="aula">
+      <span class="lb">Por que do zero</span>
+      Copiar um CRUD pronto leva vinte minutos e não ensina nada. Escrever um leva algumas
+      horas e revela exatamente onde o entendimento está frouxo — que é justamente o que
+      você quer descobrir <em>agora</em>, e não na primeira entrevista de emprego.
+    </div>
+  </div>
+</section>
+
+
+<section id="tema">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">2</span>Escolha o seu tema</h2>
+    </div>
+    <p class="lead">Qualquer coisa que se cadastre, se liste e se edite. Escolha algo que você
+      entenda sem precisar pesquisar — o trabalho aqui é programar, não estudar o assunto.</p>
+
+    <div class="temas">
+      <div class="tema"><b>Oficina mecânica</b><span>serviços e valores</span></div>
+      <div class="tema"><b>Petshop</b><span>animais e tutores</span></div>
+      <div class="tema"><b>Biblioteca pessoal</b><span>livros lidos</span></div>
+      <div class="tema"><b>Academia</b><span>alunos e planos</span></div>
+      <div class="tema"><b>Barbearia</b><span>agendamentos</span></div>
+      <div class="tema"><b>Estoque de loja</b><span>itens e quantidade</span></div>
+      <div class="tema"><b>Catálogo de filmes</b><span>assistidos e nota</span></div>
+      <div class="tema"><b>Controle de gastos</b><span>despesas do mês</span></div>
+      <div class="tema"><b>Ferramentas</b><span>quem pegou emprestado</span></div>
+      <div class="tema"><b>Horta</b><span>plantio e colheita</span></div>
+    </div>
+
+    <p>São sugestões. Pode ser outro — só não vale <strong>prontuário, paciente ou leito</strong>,
+    porque esse sistema já existe pronto e o exercício perde a graça.</p>
+
+    <div class="eN"></div>
+    <h3>A regra da escolha</h3>
+    <p>Qualquer que seja o tema, a sua tabela principal precisa ter <strong>pelo menos cinco
+    campos</strong>, e entre eles:</p>
+
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">Um texto curto</div><div class="d">Nome, título, descrição. É o campo pelo qual a listagem vai ser ordenada e buscada.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">Um número</div><div class="d">Preço, quantidade, nota, peso. Escolha entre inteiro e decimal com atenção — e saiba dizer por quê.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">Uma data</div><div class="d">Validade, agendamento, data de cadastro. Datas são onde mais se erra, e por isso entram.</div></div></div>
+    <div class="chk"><div class="mk ok">4</div><div><div class="t">Uma escolha de uma lista curta</div><div class="d">Situação, categoria, tamanho, tipo. Vira um <code>&lt;select&gt;</code> na tela — e o valor dele <strong>é conferido no PHP antes de gravar</strong>, porque tudo que vem do navegador pode ter sido trocado.</div></div></div>
+    <div class="chk"><div class="mk ok">5</div><div><div class="t">A coluna <code>ativo</code></div><div class="d"><code>TINYINT(1)</code>, valor padrão 1. É ela que faz o "inativar" funcionar sem apagar nada.</div></div></div>
+  </div>
+</section>
+
+
+<section id="arquivos">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">3</span>Os arquivos que você vai entregar</h2>
+    </div>
+    <p class="lead">Onze arquivos, todos na mesma pasta. Troque o <code>X</code> pelo nome da sua
+      tabela no singular — <code>livro_listar.php</code>, <code>animal_form.php</code>,
+      <code>servico_salvar.php</code>.</p>
+
+    <div class="arqs">
+      <div class="arq"><code>index.php</code><span>a tela de login — é a primeira coisa que aparece</span></div>
+      <div class="arq"><code>autenticar.php</code><span>confere no banco e cria a sessão</span></div>
+      <div class="arq"><code>sair.php</code><span>destrói a sessão e volta ao login</span></div>
+      <div class="arq"><code>conexao.php</code><span>a única conexão do projeto inteiro</span></div>
+      <div class="arq"><code>protege.php</code><span>a tranca, incluída no topo de toda tela interna</span></div>
+      <div class="arq"><code>X_listar.php</code><span>a lista, com busca por nome</span></div>
+      <div class="arq"><code>X_form.php</code><span>o mesmo formulário cadastra e edita</span></div>
+      <div class="arq"><code>X_salvar.php</code><span>INSERT quando não vem id, UPDATE quando vem</span></div>
+      <div class="arq"><code>X_inativar.php</code><span><code>ativo = 0</code> — nunca DELETE</span></div>
+      <div class="arq"><code>estilo.css</code><span>o seu CSS, ou o Bootstrap se preferir</span></div>
+      <div class="arq"><code>banco_X.sql</code><span>o script que cria a tabela e põe 3 linhas de exemplo</span></div>
+    </div>
+
+    <div class="aula">
+      <span class="lb">Repare no nome</span>
+      <strong>Substantivo primeiro, verbo depois.</strong> <code>livro_listar.php</code> e não
+      <code>listar_livro.php</code>. Parece bobagem até a pasta ter trinta arquivos: com o
+      substantivo na frente, tudo de um assunto fica junto na lista, em ordem alfabética.
+      Na aula 7 usamos <code>salvar_produto.php</code> — era o contrário, e é o que estamos
+      corrigindo agora.
+    </div>
+  </div>
+</section>
+
+
+<section id="banco">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">4</span>O banco</h2>
+    </div>
+    <p class="lead">Duas tabelas no mínimo: a de <strong>usuários</strong>, para o login, e a
+      <strong>sua</strong>, do tema que escolheu.</p>
+
+<pre><span class="k">CREATE TABLE</span> usuarios (
+    id     <span class="k">INT</span> <span class="k">AUTO_INCREMENT</span> <span class="k">PRIMARY KEY</span>,
+    nome   <span class="k">VARCHAR</span>(100) <span class="k">NOT NULL</span>,
+    login  <span class="k">VARCHAR</span>(50)  <span class="k">NOT NULL</span> <span class="k">UNIQUE</span>,
+    senha  <span class="k">VARCHAR</span>(255) <span class="k">NOT NULL</span>,
+    ativo  <span class="k">TINYINT</span>(1)   <span class="k">NOT NULL DEFAULT</span> 1
+);</pre>
+
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">A senha tem 255 caracteres, e não 20</div><div class="d">Porque o que vai ali não é a senha: é o <strong>hash</strong> dela, gerado pelo <code>password_hash()</code>. Hash não tem volta — não existe "descriptografar", só comparar com <code>password_verify()</code>. Senha guardada em texto puro é erro grave, e conta como erro na avaliação.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">O script cria a tabela E põe três linhas de exemplo</div><div class="d">Sem dados, a listagem abre vazia e você não sabe se ela funciona. Ponha três linhas no próprio <code>.sql</code>.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">Comece o arquivo com <code>SET NAMES utf8mb4;</code></div><div class="d">Sem essa linha, dependendo de como o arquivo for carregado, os acentos entram trocados: <em>"pão"</em> vira <em>"p├úo"</em>. Nada dá erro — só fica errado, em todas as linhas com acento, e ninguém percebe até a tela mostrar.</div></div></div>
+
+    <div class="callout">
+      <strong>Como criar o primeiro usuário.</strong> Você não tem tela de cadastro de usuário —
+      e não precisa ter. Rode uma vez, num arquivo PHP solto,
+      <code>echo password_hash('123456', PASSWORD_DEFAULT);</code>, copie o resultado e cole
+      dentro de um <code>INSERT</code> no seu <code>.sql</code>. Depois apague o arquivo solto.
+    </div>
+  </div>
+</section>
+
+
+<section id="requisitos">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">5</span>Os requisitos obrigatórios</h2>
+    </div>
+    <p class="lead">Isto é a lista de conferência da avaliação. Passe por ela antes de entregar.</p>
+
+    <h3>As quatro operações</h3>
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">Listar</div><div class="d">Uma tabela na tela com os registros <strong>ativos</strong>, ordenada por nome. Inativo aparece apagado no fim da lista, ou não aparece — escolha e seja coerente.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">Cadastrar</div><div class="d">Formulário em branco, <code>INSERT</code> ao salvar, e volta para a lista.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">Editar</div><div class="d"><strong>O mesmo arquivo do cadastrar</strong>, com os campos preenchidos. Quem decide entre INSERT e UPDATE é o <code>id</code>: veio id, é UPDATE; não veio, é INSERT.</div></div></div>
+    <div class="chk"><div class="mk ok">4</div><div><div class="t">Inativar</div><div class="d"><code>UPDATE ... SET ativo = 0</code>. <strong>Não existe DELETE neste projeto.</strong> O registro some da lista mas continua no banco — é assim que sistema de verdade faz, porque dado apagado não volta e quase sempre alguém depende dele.</div></div></div>
+
+    <h3>As regras que valem em todas as telas</h3>
+    <div class="chk"><div class="mk ok">5</div><div><div class="t">Toda consulta que recebe algo de fora usa prepared statement</div><div class="d">Os quatro passos: <code>mysqli_prepare</code> · <code>bind_param</code> · <code>execute</code> · <code>get_result</code>. "De fora" é tudo que veio de <code>$_POST</code>, <code>$_GET</code> ou do formulário. É o que impede a injeção de SQL.</div></div></div>
+    <div class="chk"><div class="mk ok">6</div><div><div class="t">O formulário valida antes de gravar</div><div class="d">Campo obrigatório vazio não entra. E a mensagem de erro aparece <strong>no campo errado</strong>, não num alerta genérico no topo.</div></div></div>
+    <div class="chk"><div class="mk ok">7</div><div><div class="t">O valor do <code>&lt;select&gt;</code> é conferido no PHP</div><div class="d">A lista fechada na tela não garante nada: o navegador pode mandar qualquer coisa. Confira contra a sua lista antes de gravar.</div></div></div>
+    <div class="chk"><div class="mk ok">8</div><div><div class="t">Todo arquivo que só tem PHP termina sem a marca de fechar</div><div class="d">Sem <code>?&gt;</code> no fim. Um espaço ou uma linha em branco depois dela vai para o navegador e quebra todo <code>header('Location: ...')</code>, com o erro <em>"headers already sent"</em>.</div></div></div>
+  </div>
+</section>
+
+
+<section id="login">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">6</span>O login e a tranca — a parte que diferencia</h2>
+    </div>
+    <p class="lead">CRUD sem login é exercício. CRUD com área protegida é sistema. É aqui que
+      este projeto deixa de ser uma lista na tela.</p>
+
+    <h3>Entrar</h3>
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">A senha é conferida com <code>password_verify()</code></div><div class="d">Nunca com <code>=</code>. O banco guarda o hash; <code>password_verify()</code> compara a senha digitada com ele.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">A consulta do login filtra <code>ativo = 1</code></div><div class="d">Sem isso, desativar um usuário não desativa nada.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">A mensagem de erro é a mesma nos dois casos</div><div class="d"><em>"Login ou senha incorretos"</em>, tanto para usuário que não existe quanto para senha errada. Se a tela disser "usuário não encontrado", ela está contando quais logins existem para quem estiver testando.</div></div></div>
+
+    <h3>A tranca</h3>
+    <p>Um arquivo só, <code>protege.php</code>, incluído na <strong>primeira linha</strong> de
+    toda tela interna:</p>
+
+<pre><span class="k">if</span> (<span class="k">session_status</span>() === PHP_SESSION_NONE) {
+    <span class="k">session_start</span>();
+}
+
+<span class="k">if</span> (!<span class="k">isset</span>($_SESSION[<span class="s">'usuario_id'</span>])) {
+    <span class="k">header</span>(<span class="s">'Location: index.php'</span>);
+    <span class="k">exit</span>;
+}</pre>
+
+    <div class="chk"><div class="mk ok">4</div><div><div class="t">Em TODAS as telas internas, inclusive as que gravam</div><div class="d">O <code>X_salvar.php</code> e o <code>X_inativar.php</code> também. <strong>É neles que o estrago aconteceria</strong> — a tela só mostra; quem grava é o arquivo de trás.</div></div></div>
+    <div class="chk"><div class="mk ok">5</div><div><div class="t">O <code>exit</code> depois do <code>header</code> não é enfeite</div><div class="d">Sem ele o PHP continua executando o resto do arquivo. O navegador é desviado, mas o código já rodou — e se havia um INSERT ali, ele aconteceu.</div></div></div>
+
+    <div class="erro">
+      <span class="lb">Teste que você tem que fazer</span>
+      <h4>Digite o endereço de uma tela interna sem estar logado</h4>
+      <p style="margin-bottom:0">Abra <code>X_listar.php</code> direto na barra do navegador, sem
+      passar pelo login. Se a tela aparecer, a tranca não está funcionando — e esconder o link
+      do menu não resolve, porque o endereço continua lá. <strong>Esconder não é segurança.</strong>
+      Faça esse teste antes de entregar.</p>
+    </div>
+  </div>
+</section>
+
+
+<section id="sintaxe">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">7</span>Atenção: a sintaxe mudou</h2>
+    </div>
+    <p class="lead">Nas aulas 3 a 7 usamos a forma com seta — <code>$conexao-&gt;prepare()</code>.
+      <strong>Neste projeto use a forma procedural</strong>, com <code>mysqli_</code> na frente.
+      É a mesma coisa escrita de outro jeito, e é a que o sistema do curso usa.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Nas aulas (não use aqui)</th><th>Neste projeto</th></tr></thead>
+        <tbody>
+          <tr><td><code>$conexao = new mysqli(...)</code></td><td><code>$conexao = mysqli_connect(...)</code></td></tr>
+          <tr><td><code>$conexao-&gt;prepare($sql)</code></td><td><code>mysqli_prepare($conexao, $sql)</code></td></tr>
+          <tr><td><code>$stmt-&gt;bind_param("si", ...)</code></td><td><code>mysqli_stmt_bind_param($stmt, "si", ...)</code></td></tr>
+          <tr><td><code>$stmt-&gt;execute()</code></td><td><code>mysqli_stmt_execute($stmt)</code></td></tr>
+          <tr><td><code>$stmt-&gt;get_result()</code></td><td><code>mysqli_stmt_get_result($stmt)</code></td></tr>
+          <tr><td><code>$resultado-&gt;fetch_assoc()</code></td><td><code>mysqli_fetch_assoc($resultado)</code></td></tr>
+          <tr><td><code>$stmt-&gt;close()</code></td><td><code>mysqli_stmt_close($stmt)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Não misture as duas no mesmo projeto.</strong> Misturar funciona, e é exatamente
+    por isso que é ruim: ninguém percebe, e o código passa a ter duas personalidades.</p>
+
+    <div class="aula">
+      <span class="lb">Vale saber</span>
+      As duas formas chamam o mesmo código por baixo — a diferença é só de escrita. A forma
+      procedural combina com programação estruturada, que é a disciplina que vocês estão
+      cursando. A forma com seta vocês vão reencontrar em orientação a objetos, mais adiante
+      no curso.
+    </div>
+
+    <div class="erro">
+      <span class="lb">A conta que o PHP não confere para você</span>
+      <h4>Três contagens têm que ser iguais, não duas</h4>
+      <p style="margin-bottom:0">Interrogações na consulta = letras no <code>bind_param</code> =
+      variáveis passadas. <code>"ssi"</code> com três <code>?</code> e três variáveis. Se uma
+      das três não bater, o erro só aparece na hora de gravar — e a mensagem não diz qual das
+      três está errada.</p>
+    </div>
+  </div>
+</section>
+
+
+<section id="naoprecisa">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">8</span>O que NÃO precisa ter</h2>
+    </div>
+    <p class="lead">Esta lista é tão importante quanto a dos requisitos. Nada aqui conta ponto,
+      e tentar fazer tudo é a forma mais comum de não entregar.</p>
+
+    <ul class="naotem">
+      <li><strong>Perfis de usuário.</strong> Logado ou não logado, só isso. Nada de administrador, gerente e visitante.</li>
+      <li><strong>Cadastro de usuário pela tela.</strong> O usuário nasce no <code>.sql</code>.</li>
+      <li><strong>Recuperação de senha.</strong> Nem "esqueci minha senha", nem e-mail.</li>
+      <li><strong>Upload de imagem.</strong> Se o seu tema pede foto, guarde o endereço de uma imagem da internet num campo de texto.</li>
+      <li><strong>Relatório, gráfico ou exportação.</strong> Nada de PDF, Excel ou gráfico.</li>
+      <li><strong>JavaScript.</strong> Se usar, que seja enfeite. Nenhuma regra do sistema pode depender dele.</li>
+      <li><strong>Mais de duas tabelas suas.</strong> Uma basta; duas é o diferencial. Três começa a ser outro projeto.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Um sistema pequeno e inteiro vale mais que um grande pela metade.</strong>
+      Faça as quatro operações funcionarem de ponta a ponta primeiro. Só depois, se sobrar
+      tempo, vá para os diferenciais.
+    </div>
+  </div>
+</section>
+
+
+<section id="diferenciais">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">9</span>Diferenciais</h2>
+    </div>
+    <p class="lead">Depois que o básico estiver funcionando. Cada um destes aparece na avaliação
+      — e nenhum deles compensa um CRUD que não funciona.</p>
+
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">Busca por nome na listagem</div><div class="d">Um campo e um botão Filtrar. E repare: busca é valor vindo de fora, então ela <strong>obriga</strong> o prepared statement.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">Uma segunda tabela, ligada à primeira</div><div class="d">Um catálogo — categorias, marcas, tipos — que vira o <code>&lt;select&gt;</code> do formulário, com chave estrangeira. A listagem usa <code>JOIN</code> para mostrar o nome em vez do número.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">O vazio que explica</div><div class="d">Lista vazia não diz só "nenhum registro". Diz <em>"nenhum resultado para essa busca"</em> se houve busca, e <em>"nenhum cadastro ainda"</em> se o banco está vazio. São situações diferentes, e dizer a frase errada manda a pessoa procurar defeito onde não há.</div></div></div>
+    <div class="chk"><div class="mk ok">4</div><div><div class="t">Confirmação antes de inativar</div><div class="d">Um <code>confirm()</code> ou uma tela de confirmação. Ação que muda dados não acontece com um clique distraído.</div></div></div>
+    <div class="chk"><div class="mk ok">5</div><div><div class="t">O nome de quem está logado na tela</div><div class="d">No topo, com o botão Sair ao lado. Vem da sessão, que você já criou no login.</div></div></div>
+    <div class="chk"><div class="mk ok">6</div><div><div class="t">A tela funciona no celular</div><div class="d">Abra o seu sistema no telefone, ou estreite a janela do navegador. Se a tabela estourar para o lado, resolva.</div></div></div>
+  </div>
+</section>
+
+
+<section id="avaliacao">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">10</span>Como vai ser avaliado</h2>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>O quê</th><th>O que se olha</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Funciona de ponta a ponta</strong></td><td>As quatro operações, sem erro na tela, com dados de verdade</td><td>30</td></tr>
+          <tr><td><strong>Login e tranca</strong></td><td>Entra, sai, e nenhuma tela interna abre pelo endereço direto</td><td>25</td></tr>
+          <tr><td><strong>Banco e segurança</strong></td><td>Prepared statement, hash de senha, <code>select</code> conferido, <code>ativo = 0</code></td><td>20</td></tr>
+          <tr><td><strong>A tela</strong></td><td>CSS próprio ou Bootstrap, legível, com mensagens no lugar certo</td><td>15</td></tr>
+          <tr><td><strong>Organização</strong></td><td>Nomes de arquivo na convenção, código comentado, uma conexão só</td><td>10</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Os <strong>diferenciais</strong> da seção anterior valem
+    <span class="preencher">pontos extras</span>, e entram depois de o básico estar fechado.</p>
+
+    <div class="erro">
+      <span class="lb">O que zera o item</span>
+      <h4>Três coisas derrubam a nota do item inteiro</h4>
+      <p style="margin-bottom:0">Senha guardada em texto puro · consulta montada com
+      <code>"... WHERE nome = '$nome'"</code> em vez de prepared statement · tela interna que
+      abre sem login. Não é rigor por rigor: são os três erros que, num sistema de verdade,
+      têm consequência fora do computador.</p>
+    </div>
+  </div>
+</section>
+
+
+<section id="armadilhas">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">11</span>Armadilhas conhecidas</h2>
+    </div>
+    <p class="lead">Todas estas já aconteceram, com gente que sabia o que estava fazendo.
+      Ler isto agora economiza horas depois.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>O sintoma</th><th>A causa</th></tr></thead>
+        <tbody>
+          <tr><td><em>"headers already sent"</em> no <code>header('Location: ...')</code></td><td>Espaço, linha em branco ou <code>echo</code> antes do header. Arquivo só de PHP termina <strong>sem</strong> <code>?&gt;</code></td></tr>
+          <tr><td>Acentos trocados: <em>"p├úo"</em> no lugar de <em>"pão"</em></td><td>Faltou <code>SET NAMES utf8mb4;</code> no início do <code>.sql</code>, ou <code>mysqli_set_charset($conexao, 'utf8mb4')</code> na conexão</td></tr>
+          <tr><td>A página abre, mas é o login — e você jurava que o arquivo existia</td><td>Nome do arquivo errado. O servidor embutido do PHP devolve o <code>index.php</code> em vez de 404</td></tr>
+          <tr><td>Erro na hora de gravar, e a mensagem não ajuda</td><td>As três contagens do <code>bind_param</code> não batem. Conte de novo: <code>?</code>, letras, variáveis</td></tr>
+          <tr><td>Metade do arquivo virou texto na tela</td><td>Você escreveu <code>?&gt;</code> dentro de um comentário <code>//</code>. A marca fecha o PHP mesmo comentada</td></tr>
+          <tr><td><code>Failed to open file ... error: 2</code> ao rodar o <code>.sql</code></td><td>Acento no caminho da pasta. Copie o arquivo para <code>C:\temp</code> e rode de lá</td></tr>
+          <tr><td>Editar salvou um registro novo em vez de alterar</td><td>O <code>id</code> não chegou no <code>X_salvar.php</code>. Ele precisa ir no formulário, num campo escondido</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<section id="entrega">
+  <div class="wrap">
+    <div class="passo">
+      <h2 style="margin:0"><span class="num">12</span>Entrega</h2>
+    </div>
+
+    <div class="chk"><div class="mk ok">1</div><div><div class="t">Uma pasta compactada em .zip</div><div class="d">Com o nome <code>projetofinal-seunome.zip</code>, contendo os onze arquivos e o <code>.sql</code>.</div></div></div>
+    <div class="chk"><div class="mk ok">2</div><div><div class="t">Um arquivo <code>LEIA-ME.txt</code> junto</div><div class="d">Em cinco linhas: qual é o tema, qual o login e a senha para testar, e o que ficou faltando. Dizer o que faltou não tira ponto — esconder, sim.</div></div></div>
+    <div class="chk"><div class="mk ok">3</div><div><div class="t">Entregue em <span class="preencher">onde</span> até <span class="preencher">data</span></div><div class="d">Depois do prazo, <span class="preencher">regra de atraso</span>.</div></div></div>
+
+    <h3>Antes de compactar, teste isto</h3>
+    <div class="chk"><div class="mk ok">✓</div><div><div class="d">Rodei o <code>.sql</code> num banco <strong>vazio</strong> e o sistema funcionou. (Se só funciona no seu banco, ele não funciona.)</div></div></div>
+    <div class="chk"><div class="mk ok">✓</div><div><div class="d">Entrei, cadastrei, editei, inativei e saí — nessa ordem, sem nenhum aviso de PHP na tela.</div></div></div>
+    <div class="chk"><div class="mk ok">✓</div><div><div class="d">Digitei o endereço de uma tela interna sem estar logado, e caí no login.</div></div></div>
+    <div class="chk"><div class="mk ok">✓</div><div><div class="d">Cadastrei um registro com acento no nome e ele apareceu certo na lista.</div></div></div>
+    <div class="chk"><div class="mk ok">✓</div><div><div class="d">Deixei um campo obrigatório vazio e a tela recusou, dizendo qual campo faltou.</div></div></div>
+
+    <div class="aula">
+      <span class="lb">Uma última coisa</span>
+      Se travar, pergunte. Travar é parte do trabalho — ficar três dias travado em silêncio,
+      não. Traga o erro na tela, o arquivo aberto, e a pergunta fica fácil de responder.
+    </div>
+  </div>
+</section>
+
+
+<footer style="padding:40px 0 60px">
+  <div class="wrap" style="color:var(--ink-3); font-size:14px">
+    <strong>UC12 · UC13</strong> — Técnico em Desenvolvimento de Sistemas · Senac<br>
+    Projeto final individual · <span class="preencher">turma</span> ·
+    <span class="preencher">ano</span>
+  </div>
+</footer>
+
+</body>
+</html>
